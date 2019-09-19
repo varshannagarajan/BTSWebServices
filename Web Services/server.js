@@ -6,6 +6,14 @@ const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
 // Or use some other port number that you like better
 
+// Data model and persistent store
+const manager = require("./manager.js");
+// This one works for localhost...
+//const m = manager("mongodb://localhost/coursedbweek2");
+// This one works for MongoDB Atlas...
+// Replace the database user name and password, and cluster name, with your own values
+const m = manager("mongodb://Kayaba:lmao@bti-as01-shard-00-00-gmim2.mongodb.net:27017,bti-as01-shard-00-01-gmim2.mongodb.net:27017,bti-as01-shard-00-02-gmim2.mongodb.net:27017/Assignment2?ssl=true&replicaSet=BTI-AS01-shard-0&authSource=admin&retryWrites=true");
+
 // Add support for incoming JSON entities
 app.use(bodyParser.json());
 
@@ -28,27 +36,57 @@ app.listen(HTTP_PORT, () => {
 
 // Get all
 app.get("/api/events", (req, res) => {
-    res.json({message: "fetch all events"});
+    m.eventsGetAll()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      res.status(500).json({ "message": error });
+    })
 });
 
 // Get one
 app.get("/api/events/:eventId", (req, res) => {
-    res.json({message: "get event with Id: " + req.params.eventId});
+    m.eventsGetById(req.params.eventId)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ "message": "Resource not found" });
+    })
 });
 
 // Add new
 app.post("/api/events", (req, res) => {
-     res.json({message: "add a event: " + req.body.eventId + " - " + req.body.eventName});
+    m.eventsAdd(req.body)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      res.status(500).json({ "message": error });
+    })
 });
 
 // Edit existing
 app.put("/api/events/:eventId", (req, res) => {
-    res.json({message: "update event with Id: " + req.params.eventId + " to " + req.body.eventName});
+    m.eventsEdit(req.body)
+    .then((data) => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ "message": "Resource not found" });
+    })
 });
 
 // Delete item
 app.delete("/api/events/:eventId", (req, res) => {
-     res.json({message: "delete user with Id: " + req.params.eventId});
+    m.eventsDelete(req.params.eventId)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch(() => {
+      res.status(404).json({ "message": "Resource not found" });
+    })
 });
 
 /*********************************************************          USER         *********************************************************************/
