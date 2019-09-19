@@ -9,7 +9,7 @@ const eventSchema = require("./sch-event");
 // Schema 
 
 var userSchema = new Schema({
-    user_userID: {type: String, unique: true},
+    user_ID: {type: String, unique: true},
     user_contactInfo: contactSchema,
     user_firstName: String,
     user_lastName: String,

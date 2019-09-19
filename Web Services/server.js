@@ -131,38 +131,58 @@ app.delete("/api/items/:itemId", (req, res) => {
 /*******************************************************          COMPANY         *********************************************************************/
 
 // Get all
-app.get("/api/items", (req, res) => {
-  res.json({ message: "fetch all items" });
+app.get("/api/company", (req, res) => {
+  m.companyGetAll()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(error => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Get one
-app.get("/api/items/:itemId", (req, res) => {
-  res.json({ message: "get user with Id: " + req.params.itemId });
+app.get("/api/company/:companyID", (req, res) => {
+  m.eventsGetById(req.params.companyID)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 // Add new
-app.post("/api/items", (req, res) => {
-  res.json({
-    message: "add a user item: " + req.body.firstName + " " + req.body.lastName
-  });
+app.post("/api/company", (req, res) => {
+  m.companyAdd(req.body)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(error => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Edit existing
-app.put("/api/items/:itemId", (req, res) => {
-  res.json({
-    message:
-      "update user with Id: " +
-      req.params.itemId +
-      " to " +
-      req.body.firstName +
-      " " +
-      req.body.lastName
-  });
+app.put("/api/company/:companyID", (req, res) => {
+  m.companyEdit(req.body)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 // Delete item
-app.delete("/api/items/:itemId", (req, res) => {
-  res.json({ message: "delete user with Id: " + req.params.itemId });
+app.delete("/api/company/:companyID", (req, res) => {
+  m.companyDelete(req.params.companyID)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 /*****************************************************************************************************************************************************/
