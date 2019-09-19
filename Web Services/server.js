@@ -27,28 +27,28 @@ app.listen(HTTP_PORT, () => {
 /*******************************************************          EVENTS         *********************************************************************/
 
 // Get all
-app.get("/api/items", (req, res) => {
-    res.json({message: "fetch all items"});
+app.get("/api/events", (req, res) => {
+    res.json({message: "fetch all events"});
 });
 
 // Get one
-app.get("/api/items/:itemId", (req, res) => {
-    res.json({message: "get user with Id: " + req.params.itemId});
+app.get("/api/events/:eventId", (req, res) => {
+    res.json({message: "get event with Id: " + req.params.eventId});
 });
 
 // Add new
-app.post("/api/items", (req, res) => {
-     res.json({message: "add a user item: " + req.body.firstName + " " + req.body.lastName});
+app.post("/api/events", (req, res) => {
+     res.json({message: "add a event: " + req.body.eventId + " - " + req.body.eventName});
 });
 
 // Edit existing
-app.put("/api/items/:itemId", (req, res) => {
-    res.json({message: "update user with Id: " + req.params.itemId + " to " + req.body.firstName + " " + req.body.lastName});
+app.put("/api/events/:eventId", (req, res) => {
+    res.json({message: "update event with Id: " + req.params.eventId + " to " + req.body.eventName});
 });
 
 // Delete item
-app.delete("/api/items/:itemId", (req, res) => {
-     res.json({message: "delete user with Id: " + req.params.itemId});
+app.delete("/api/events/:eventId", (req, res) => {
+     res.json({message: "delete user with Id: " + req.params.eventId});
 });
 
 /*********************************************************          USER         *********************************************************************/
