@@ -124,14 +124,25 @@ app.get("/api/useraccounts/:userID", passport.authenticate('jwt', { session: fal
       })
   });
 
-// Add new
-app.post("/api/items", (req, res) => {
-     res.json({message: "add a user item: " + req.body.firstName + " " + req.body.lastName});
+// User account create
+app.post("/api/useraccounts/create", (req, res) => {
+  m.userRegister(req.body)
+    .then((data) => {
+      res.json({ "message": data });
+    }).catch((msg) => {
+      res.status(400).json({ "message": msg });
+    });
 });
 
-// Edit existing
-app.put("/api/items/:itemId", (req, res) => {
-    res.json({message: "update user with Id: " + req.params.itemId + " to " + req.body.firstName + " " + req.body.lastName});
+// Edit existing user
+app.put("/api/useraccounts/:userID", (req, res) => {
+  m.userEdit(req.body)
+  .then((data) => {
+    res.json({message: "update user with Id: " + req.params.userID + " to " + req.body.firstName + " " + req.body.lastName});
+  })
+  .catch((msg) => {
+    res.status(404).json({ "message": msg });
+  })
 });
 
 // Delete user
