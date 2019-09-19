@@ -10,14 +10,14 @@ const eventSchema = require("./sch-event");
 // Schema 
 
 var companySchema = new Schema({
-    comp_cid: {type: String, unique: true},
+    comp_ID: {type: String, unique: true},
     comp_name: String,
     comp_address: addressSchema,
     comp_contact: contactSchema,
-    photo: Image, 
-    employees: [userSchema],
-    bio: String,
-    eventsList: [eventSchema]
+    comp_photo: Image, 
+    comp_employees: [userSchema],
+    comp_bio: String,
+    comp_eventsList: [eventSchema]
 })
 
 // Make schema public to the application 
