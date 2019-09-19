@@ -203,11 +203,11 @@ module.exports = function(mongoDBConnectionString) {
     },
 
     /*******************************************************          COMPANY         *********************************************************************/
-    eventsGetAll: function() {
+    companyGetAll: function() {
       return new Promise(function(resolve, reject) {
         // Fetch all documents
         Event.find()
-          .sort({ eventId: "asc" })
+          .sort({ comp_id: "asc" })
           .exec((error, items) => {
             if (error) {
               // Query error
@@ -219,10 +219,10 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    eventsGetById: function(eventId) {
+    companyGetById: function(comp_id) {
       return new Promise(function(resolve, reject) {
         // Find one specific document
-        Student.findById(studentId, (error, item) => {
+        Company.findById(comp_id, (error, item) => {
           if (error) {
             // Find/match is not found
             return reject(error.message);
@@ -238,9 +238,9 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    studentAdd: function(newItem) {
+    companyAdd: function(newItem) {
       return new Promise(function(resolve, reject) {
-        Student.create(newItem, (error, item) => {
+        Company.create(newItem, (error, item) => {
           if (error) {
             // Cannot add item
             return reject(error.message);
@@ -251,10 +251,10 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    studentEdit: function(newItem) {
+    companyEdit: function(newItem) {
       return new Promise(function(resolve, reject) {
-        Student.findByIdAndUpdate(
-          newItem._id,
+        Company.findByIdAndUpdate(
+          newItem.comp_id,
           newItem,
           { new: true },
           (error, item) => {
@@ -274,9 +274,9 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    studentDelete: function(itemId) {
+    companyDelete: function(itemId) {
       return new Promise(function(resolve, reject) {
-        Student.findByIdAndRemove(itemId, error => {
+        Company.findByIdAndRemove(itemId, error => {
           if (error) {
             // Cannot delete item
             return reject(error.message);
