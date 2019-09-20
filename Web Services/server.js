@@ -14,7 +14,7 @@ const manager = require("./manager.js");
 //const m = manager("mongodb://localhost/assign2db");
 // This one works for MongoDB Atlas...
 // Replace the database user name and password, and cluster name, with your own values
-const m = manager("mongodb+srv://link");
+const m = manager("mongodb+srv://btsUser:JulianVarshanNeil1@btsproject-3qsjm.mongodb.net/btsproject?retryWrites=true&w=majority");
 
 // Add support for incoming JSON entities
 app.use(bodyParser.json());
