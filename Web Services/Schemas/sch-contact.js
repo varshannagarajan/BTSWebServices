@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var contactSchema = new Schema({
-    contactID: {type: String, unqiue: true},
+    contact_ID: Schema.Types.ObjectId,
     emails: [String],
     phoneNumber: String,
     linkedIn: String,
