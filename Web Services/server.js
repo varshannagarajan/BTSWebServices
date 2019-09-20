@@ -1,7 +1,8 @@
 // Setup
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
 // Or use some other port number that you like better
@@ -9,17 +10,58 @@ const HTTP_PORT = process.env.PORT || 8080;
 // Data model and persistent store
 const manager = require("./manager.js");
 // This one works for localhost...
-//const m = manager("mongodb://localhost/coursedbweek2");
+
+//const m = manager("mongodb://localhost/assign2db");
 // This one works for MongoDB Atlas...
 // Replace the database user name and password, and cluster name, with your own values
-const m = manager("mongodb://Kayaba:lmao@bti-as01-shard-00-00-gmim2.mongodb.net:27017,bti-as01-shard-00-01-gmim2.mongodb.net:27017,bti-as01-shard-00-02-gmim2.mongodb.net:27017/Assignment2?ssl=true&replicaSet=BTI-AS01-shard-0&authSource=admin&retryWrites=true");
+const m = manager("mongodb+srv://link");
 
 // Add support for incoming JSON entities
 app.use(bodyParser.json());
 
+// Add support for CORS
+app.use(cors());
+
+// Passport.js components
+var jwt = require('jsonwebtoken');
+var passport = require("passport");
+var passportJWT = require("passport-jwt");
+
+// JSON Web Token Setup
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
+
+// Configure its options
+var jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
+// IMPORTANT - this secret should be a long, unguessable string 
+// (ideally stored in a "protected storage" area on the 
+// web server, a topic that is beyond the scope of this course)
+// We suggest that you generate a random 64-character string
+// using the following online tool:
+// https://lastpass.com/generatepassword.php 
+jwtOptions.secretOrKey = 'big-long-string-from-lastpass.com/generatepassword.php';
+
+var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
+  console.log('payload received', jwt_payload);
+
+  if (jwt_payload) {
+    // The following will ensure that all routes using 
+    // passport.authenticate have a req.user._id value 
+    // that matches the request payload's _id
+    next(null, { _id: jwt_payload._id });
+  } else {
+    next(null, false);
+  }
+});
+
+// Activate the security system
+passport.use(strategy);
+app.use(passport.initialize());
+
 // Deliver the app's home page to browser clients
-app.get("/", (req,res) => {
-    res.sendFile(path.join(__dirname, "/index.html"));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/index.html"));
 });
 
 // Resource not found (this should be at the end)
@@ -29,118 +71,178 @@ app.use((req, res) => {
 
 // Tell the app to start listening for requests
 app.listen(HTTP_PORT, () => {
-    console.log("Ready to handle requests on port " + HTTP_PORT);
+  console.log("Ready to handle requests on port " + HTTP_PORT);
 });
 
 /*******************************************************          EVENTS         *********************************************************************/
 
 // Get all
 app.get("/api/events", (req, res) => {
-    m.eventsGetAll()
-    .then((data) => {
+  m.eventsGetAll()
+    .then(data => {
       res.json(data);
     })
-    .catch((error) => {
-      res.status(500).json({ "message": error });
-    })
+    .catch(error => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Get one
 app.get("/api/events/:eventId", (req, res) => {
-    m.eventsGetById(req.params.eventId)
-    .then((data) => {
+  m.eventsGetById(req.params.eventId)
+    .then(data => {
       res.json(data);
     })
     .catch(() => {
-      res.status(404).json({ "message": "Resource not found" });
-    })
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 // Add new
 app.post("/api/events", (req, res) => {
-    m.eventsAdd(req.body)
-    .then((data) => {
+  m.eventsAdd(req.body)
+    .then(data => {
       res.json(data);
     })
-    .catch((error) => {
-      res.status(500).json({ "message": error });
-    })
+    .catch(error => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Edit existing
 app.put("/api/events/:eventId", (req, res) => {
-    m.eventsEdit(req.body)
-    .then((data) => {
+  m.eventsEdit(req.body)
+    .then(data => {
       res.json(data);
     })
     .catch(() => {
-      res.status(404).json({ "message": "Resource not found" });
-    })
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 // Delete item
 app.delete("/api/events/:eventId", (req, res) => {
-    m.eventsDelete(req.params.eventId)
+  m.eventsDelete(req.params.eventId)
     .then(() => {
       res.status(204).end();
     })
     .catch(() => {
-      res.status(404).json({ "message": "Resource not found" });
-    })
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 /*********************************************************          USER         *********************************************************************/
 
-// Get all
-app.get("/api/items", (req, res) => {
-    res.json({message: "fetch all items"});
+// Get all users
+app.get("/api/useraccounts", passport.authenticate('jwt', { session: false }), (req, res) => {
+    // Call the manager method
+    m.usersGetAll().then((data) => {
+      res.json(data);
+    })
+      .catch((err) => {
+        res.status(500).json({ "message": err }).end();
+      })
 });
 
-// Get one
-app.get("/api/items/:itemId", (req, res) => {
-    res.json({message: "get user with Id: " + req.params.itemId});
+// Get one user
+app.get("/api/useraccounts/:userID", passport.authenticate('jwt', { session: false }), (req, res) => {
+    // Call the manager method
+    m.userGetById(req.params.userID).then((data) => {
+      res.json(data);
+    })
+      .catch((err) => {
+        res.status(404).json({ "message": "Resource not found" });
+      })
+  });
+
+// User account create
+app.post("/api/useraccounts/create", (req, res) => {
+  m.userRegister(req.body)
+    .then((data) => {
+      res.json({ "message": data });
+    }).catch((msg) => {
+      res.status(400).json({ "message": msg });
+    });
 });
 
-// Add new
-app.post("/api/items", (req, res) => {
-     res.json({message: "add a user item: " + req.body.firstName + " " + req.body.lastName});
+// Edit existing user
+app.put("/api/useraccounts/:userID", (req, res) => {
+  m.userEdit(req.body)
+  .then((data) => {
+    res.json({message: "update user with Id: " + req.params.userID + " to " + req.body.firstName + " " + req.body.lastName});
+  })
+  .catch((msg) => {
+    res.status(404).json({ "message": msg });
+  })
 });
 
-// Edit existing
-app.put("/api/items/:itemId", (req, res) => {
-    res.json({message: "update user with Id: " + req.params.itemId + " to " + req.body.firstName + " " + req.body.lastName});
-});
-
-// Delete item
-app.delete("/api/items/:itemId", (req, res) => {
-     res.json({message: "delete user with Id: " + req.params.itemId});
+// Delete user
+app.delete("/api/useraccounts/:userID", (req, res) => {
+    // Call the manager method
+    m.userDelete(req.params.userID)
+      .then(() => {
+        res.status(204).end();
+      })
+      .catch(() => {
+        res.status(404).json({ "message": "Resource not found" });
+      })
 });
 
 /*******************************************************          COMPANY         *********************************************************************/
 
 // Get all
-app.get("/api/items", (req, res) => {
-    res.json({message: "fetch all items"});
+app.get("/api/company", (req, res) => {
+  m.companyGetAll()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(error => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Get one
-app.get("/api/items/:itemId", (req, res) => {
-    res.json({message: "get user with Id: " + req.params.itemId});
+app.get("/api/company/:companyID", (req, res) => {
+  m.eventsGetById(req.params.companyID)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 // Add new
-app.post("/api/items", (req, res) => {
-     res.json({message: "add a user item: " + req.body.firstName + " " + req.body.lastName});
+app.post("/api/company", (req, res) => {
+  m.companyAdd(req.body)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(error => {
+      res.status(500).json({ message: error });
+    });
 });
 
 // Edit existing
-app.put("/api/items/:itemId", (req, res) => {
-    res.json({message: "update user with Id: " + req.params.itemId + " to " + req.body.firstName + " " + req.body.lastName});
+app.put("/api/company/:companyID", (req, res) => {
+  m.companyEdit(req.body)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 // Delete item
-app.delete("/api/items/:itemId", (req, res) => {
-     res.json({message: "delete user with Id: " + req.params.itemId});
+app.delete("/api/company/:companyID", (req, res) => {
+  m.companyDelete(req.params.companyID)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 /*****************************************************************************************************************************************************/
