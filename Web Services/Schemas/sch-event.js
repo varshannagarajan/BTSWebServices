@@ -10,7 +10,7 @@ const dateSchema = require("./sch-date")
 
 var eventSchema = new Schema({
 
-        ev_eventID: {type: String, unique: true},
+        ev_ID: {type: String, unique: true},
         ev_name: String,
         ev_address: addressSchema,
         ev_category: [String],
