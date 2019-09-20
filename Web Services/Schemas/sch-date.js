@@ -3,10 +3,10 @@ var Schema = mongoose.Schema;
 
 // Schema 
 
-var eventDateSchema = new Schema({
+var dateSchema = new Schema({
     start: Date,
     end: Date
 })
 
 // Make schema public to the application 
-module.exports = eventDateSchema;
+module.exports = dateSchema;
