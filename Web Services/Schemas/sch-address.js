@@ -5,7 +5,6 @@ var Schema = mongoose.Schema;
 // Schema 
 
 var addressSchema = new Schema({
-    add_ID: Schema.Types.ObjectId,
     street: String,
     postalCode: String,
     city: String,

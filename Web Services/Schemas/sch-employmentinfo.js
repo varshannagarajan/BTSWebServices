@@ -9,10 +9,9 @@ const addressSchema = require("./sch-address");
 // Schema 
 
 var employmentInfoSchema = new Schema({
-    emp_ID: Schema.Types.ObjectId,
-    organization: {type: mongoose.Schema.Types.ObjectId, ref: companySchema},
+    organization: String,
     occupation: String,
-    organizationAddress: {type: mongoose.Schema.Types.ObjectId, ref: addressSchema}
+    organizationAddress: addressSchema
 })
 
 // Make schema public to the application 
