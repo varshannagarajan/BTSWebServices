@@ -18,7 +18,7 @@ var eventSchema = new Schema({
         ev_coordinator: String,
         ev_date: dateSchema,
         ev_attendees: [String],
-        ev_photo: Image,
+        ev_photo: String,
         ev_private: Boolean,
         ev_invitedUsers: [String]
 
