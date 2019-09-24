@@ -13,7 +13,7 @@ var companySchema = new Schema({
     comp_name: String,
     comp_address: addressSchema,
     comp_contact: contactSchema,
-    comp_photo: Image, 
+    comp_photo: String, 
     comp_employees: [String],
     comp_bio: String,
     comp_eventsList: [String]
