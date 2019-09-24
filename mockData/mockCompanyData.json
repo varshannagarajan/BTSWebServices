@@ -1,0 +1,332 @@
+[
+    {
+        "comp_name":"Apple",
+        "comp_address": {
+            "street": "One Street",
+            "postalCode": "J11-111",
+            "city": "Toronto",
+            "province": "Ontario",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "apple1@gmail.com",
+                 "apple2@hotmail.com"
+                ],
+            "phoneNumber": "416-123-1234",
+            "linkedIn": "https://ca.linkedin.com/company/apple",
+            "facebook": "https://www.facebook.com/apple/",
+            "twitter": "https://twitter.com/apple?lang=en", 
+            "instagram": "https://www.instagram.com/apple/"
+        },
+        "comp_image":"https://picsum.photos/id/384/200/300",
+        "comp_employees": [
+            "apple-employeeid1",
+            "apple-employeeid2",
+            "apple-employeeid3"
+        ],
+        "comp_bio":"We're a cool company. We offer affordable products for your everyday man.",
+        "comp_eventsList": [
+            "apple-eventid1",
+            "apple-eventid2",
+            "apple-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Google",
+        "comp_address": {
+            "street": "Two Street",
+            "postalCode": "J22-222",
+            "city": "Toronto",
+            "province": "Ontario",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "google1@gmail.com",
+                 "google2@hotmail.com"
+                ],
+            "phoneNumber": "416-234-2345",
+            "linkedIn": "https://ca.linkedin.com/company/google",
+            "facebook": "https://www.facebook.com/google/",
+            "twitter": "https://twitter.com/google?lang=en", 
+            "instagram": "https://www.instagram.com/google/"
+        },
+        "comp_image":"https://picsum.photos/id/1068/200/300",
+        "comp_employees": [
+            "google-employeeid1",
+            "google-employeeid2",
+            "google-employeeid3"
+        ],
+        "comp_bio":"Google is for the cool kids.",
+        "comp_eventsList": [
+            "google-eventid1",
+            "google-eventid2",
+            "google-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Microsoft",
+        "comp_address": {
+            "street": "Three Street",
+            "postalCode": "J33-333",
+            "city": "Vancouver",
+            "province": "Ontario",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "microsoft1@gmail.com",
+                 "microsoft1@hotmail.com"
+                ],
+            "phoneNumber": "416-345-3456",
+            "linkedIn": "https://ca.linkedin.com/company/microsoft",
+            "facebook": "https://www.facebook.com/microsoft/",
+            "twitter": "https://twitter.com/microsoft?lang=en", 
+            "instagram": "https://www.instagram.com/microsoft/"
+        },
+        "comp_image":"https://picsum.photos/id/1027/200/300",
+        "comp_employees": [
+            "microsoft-employeeid1",
+            "microsoft-employeeid2",
+            "microsoft-employeeid3"
+        ],
+        "comp_bio":"We hate Apple",
+        "comp_eventsList": [
+            "microsoft-eventid1",
+            "microsoft-eventid2",
+            "microsoft-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Dell",
+        "comp_address": {
+            "street": "Four Street",
+            "postalCode": "J44-444",
+            "city": "Vancouver",
+            "province": "Ontario",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "dell1@gmail.com",
+                 "dell2@hotmail.com"
+                ],
+            "phoneNumber": "416-456-4567",
+            "linkedIn": "https://ca.linkedin.com/company/dell",
+            "facebook": "https://www.facebook.com/dell/",
+            "twitter": "https://twitter.com/dell?lang=en", 
+            "instagram": "https://www.instagram.com/dell/"
+        },
+        "comp_image":"https://picsum.photos/id/690/200/300",
+        "comp_employees": [
+            "dell-employeeid1",
+            "dell-employeeid2",
+            "dell-employeeid3"
+        ],
+        "comp_bio":"If you ain't Dell, you ain't well.",
+        "comp_eventsList": [
+            "dell-eventid1",
+            "dell-eventid2",
+            "dell-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Bell",
+        "comp_address": {
+            "street": "Five Street",
+            "postalCode": "J55-555",
+            "city": "Ottawa",
+            "province": "Ontario",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "bell1@gmail.com",
+                 "bell2@hotmail.com"
+                ],
+            "phoneNumber": "416-567-5678",
+            "linkedIn": "https://ca.linkedin.com/company/bell",
+            "facebook": "https://www.facebook.com/bell/",
+            "twitter": "https://twitter.com/bell?lang=en", 
+            "instagram": "https://www.instagram.com/bell/"
+        },
+        "comp_image":"https://picsum.photos/id/925/200/300",
+        "comp_employees": [
+            "bell-employeeid1",
+            "bell-employeeid2",
+            "bell-employeeid3"
+        ],
+        "comp_bio":"Dell tried to copy our name but we're cooler.",
+        "comp_eventsList": [
+            "bell-eventid1",
+            "bell-eventid2",
+            "bell-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Walmart",
+        "comp_address": {
+            "street": "Six Street",
+            "postalCode": "B66-666",
+            "city": "Ottawa",
+            "province": "Ontario",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "walmart1@gmail.com",
+                 "walmart1@hotmail.com"
+                ],
+            "phoneNumber": "416-678-6789",
+            "linkedIn": "https://ca.linkedin.com/company/walmart",
+            "facebook": "https://www.facebook.com/walmart/",
+            "twitter": "https://twitter.com/walmart?lang=en", 
+            "instagram": "https://www.instagram.com/walmart/"
+        },
+        "comp_image":"https://picsum.photos/id/368/200/300",
+        "comp_employees": [
+            "walmart-employeeid1",
+            "walmart-employeeid2",
+            "walmart-employeeid3"
+        ],
+        "comp_bio":"Welcome to Walmart",
+        "comp_eventsList": [
+            "walmart-eventid1",
+            "walmart-eventid2",
+            "walmart-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Amazon",
+        "comp_address": {
+            "street": "Seven Street",
+            "postalCode": "B77-777",
+            "city": "Montreal",
+            "province": "Quebec",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "amazon1@gmail.com",
+                 "amazon1@hotmail.com"
+                ],
+            "phoneNumber": "416-789-7891",
+            "linkedIn": "https://ca.linkedin.com/company/amazon",
+            "facebook": "https://www.facebook.com/amazon/",
+            "twitter": "https://twitter.com/amazon?lang=en", 
+            "instagram": "https://www.instagram.com/amazon/"
+        },
+        "comp_image":"https://picsum.photos/id/408/200/300",
+        "comp_employees": [
+            "amazon-employeeid1",
+            "amazon-employeeid2",
+            "amazon-employeeid3"
+        ],
+        "comp_bio":"We love our employees, despite what you've heard.",
+        "comp_eventsList": [
+            "amazon-eventid1",
+            "amazon-eventid2",
+            "amazon-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Facebook",
+        "comp_address": {
+            "street": "Eight Street",
+            "postalCode": "B88-888",
+            "city": "Montreal",
+            "province": "Quebec",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "facebook1@gmail.com",
+                 "facebook1@hotmail.com"
+                ],
+            "phoneNumber": "416-987-9876",
+            "linkedIn": "https://ca.linkedin.com/company/facebook",
+            "facebook": "https://www.facebook.com/facebook/",
+            "twitter": "https://twitter.com/facebook?lang=en", 
+            "instagram": "https://www.instagram.com/facebook/"
+        },
+        "comp_image":"https://picsum.photos/id/512/200/300",
+        "comp_employees": [
+            "facebook-employeeid1",
+            "facebook-employeeid2",
+            "facebook-employeeid3"
+        ],
+        "comp_bio":"Stay connected",
+        "comp_eventsList": [
+            "facebook-eventid1",
+            "facebook-eventid2",
+            "facebook-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Twitter",
+        "comp_address": {
+            "street": "Nine Street",
+            "postalCode": "B99-999",
+            "city": "Edmonton",
+            "province": "Alberta",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "twitter1@gmail.com",
+                 "twitter1@hotmail.com"
+                ],
+            "phoneNumber": "416-876-8765",
+            "linkedIn": "https://ca.linkedin.com/company/twitter",
+            "facebook": "https://www.facebook.com/twitter/",
+            "twitter": "https://twitter.com/twitter?lang=en", 
+            "instagram": "https://www.instagram.com/twitter/"
+        },
+        "comp_image":"https://picsum.photos/id/885/200/300",
+        "comp_employees": [
+            "twitter-employeeid1",
+            "twitter-employeeid2",
+            "twitter-employeeid3"
+        ],
+        "comp_bio":"Tweet away",
+        "comp_eventsList": [
+            "twitter-eventid1",
+            "twitter-eventid2",
+            "twitter-eventid3"
+        ]
+    },
+    {
+        "comp_name":"Instagram",
+        "comp_address": {
+            "street": "Ten Street",
+            "postalCode": "B10-101",
+            "city": "Edmonton",
+            "province": "Alberta",
+            "country": "Canada"
+        },
+        "comp_contact": {
+            "emails": [
+                "instagram1@gmail.com",
+                 "instagram1@hotmail.com"
+                ],
+            "phoneNumber": "416-765-7654",
+            "linkedIn": "https://ca.linkedin.com/company/instagram",
+            "facebook": "https://www.facebook.com/instagram/",
+            "twitter": "https://twitter.com/instagram?lang=en", 
+            "instagram": "https://www.instagram.com/instagram/"
+        },
+        "comp_image":"https://picsum.photos/id/291/200/300",
+        "comp_employees": [
+            "instagram-employeeid1",
+            "instagram-employeeid2",
+            "instagram-employeeid3"
+        ],
+        "comp_bio":"We are the best",
+        "comp_eventsList": [
+            "instagram-eventid1",
+            "instagram-eventid2",
+            "instagram-eventid3"
+        ]
+    }
+]
