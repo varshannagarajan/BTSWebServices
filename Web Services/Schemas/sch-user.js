@@ -16,7 +16,7 @@ var userSchema = new Schema({
     user_firstName: String,
     user_lastName: String,
     user_employementInfo: employmentInfoSchema,
-    user_photos: [Image],
+    user_photos: [String],
     user_contacts: [String],
     user_favourites: [String],
     user_eventsList:[String],
