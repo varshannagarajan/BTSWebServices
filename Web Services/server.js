@@ -88,7 +88,7 @@ app.delete("/api/events/:eventId", (req, res) => {
 /*********************************************************          USER         *********************************************************************/
 
 // Get all users
-app.get("/api/useraccounts", (req, res) => {
+app.get("/api/users", (req, res) => {
   // Call the manager method
   m.usersGetAll()
     .then(data => {
@@ -103,7 +103,7 @@ app.get("/api/useraccounts", (req, res) => {
 });
 
 // Get one user
-app.get("/api/useraccounts/:userID", (req, res) => {
+app.get("/api/users/:userID", (req, res) => {
   // Call the manager method
   m.userGetById(req.params.userID)
     .then(data => {
@@ -115,7 +115,7 @@ app.get("/api/useraccounts/:userID", (req, res) => {
 });
 
 // User account create
-app.post("/api/useraccounts/create", (req, res) => {
+app.post("/api/users", (req, res) => {
   m.userRegister(req.body)
     .then(data => {
       res.json({ message: data });
@@ -126,7 +126,7 @@ app.post("/api/useraccounts/create", (req, res) => {
 });
 
 // Edit existing user
-app.put("/api/useraccounts/:userID", (req, res) => {
+app.put("/api/users/:userID", (req, res) => {
   m.userEdit(req.body)
     .then(data => {
       res.json({
@@ -145,7 +145,7 @@ app.put("/api/useraccounts/:userID", (req, res) => {
 });
 
 // Delete user
-app.delete("/api/useraccounts/:userID", (req, res) => {
+app.delete("/api/users/:userID", (req, res) => {
   // Call the manager method
   m.userDelete(req.params.userID)
     .then(() => {
