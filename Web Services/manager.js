@@ -23,9 +23,9 @@ module.exports = function(mongoDBConnectionString) {
         });
 
         db.once("open", () => {
-          Event = db.model("event", eventSchema, "event");
-          User = db.model("user", userSchema, "user");
-          Company = db.model("company", companySchema, "company");
+          Event = db.model("events", eventSchema, "events");
+          User = db.model("users", userSchema, "users");
+          Company = db.model("companies", companySchema, "companies");
           resolve();
         });
       });
@@ -33,7 +33,7 @@ module.exports = function(mongoDBConnectionString) {
 
     usersGetAll: function() {
       return new Promise(function(resolve, reject) {
-        UserAccounts.find()
+        User.find()
           .exec()
           .then(users => {
             // Found, a collection will be returned
@@ -47,7 +47,7 @@ module.exports = function(mongoDBConnectionString) {
 
     userGetById: function(id) {
       return new Promise(function(resolve, reject) {
-        UserAccounts.findById(id)
+        User.findById(id)
           .exec()
           .then(user => {
             // Found, one object will be returned
@@ -62,46 +62,21 @@ module.exports = function(mongoDBConnectionString) {
 
     userRegister: function(userData) {
       return new Promise(function(resolve, reject) {
-        // Incoming data package has user name (email address), full name,
-        // two identical passwords, and a role (string)
-        // { userName: xxx, fullName: aaa, password: yyy, passwordConfirm: yyy, role: zzz }
-
-        if (userData.password != userData.passwordConfirm) {
-          return reject("Passwords do not match");
-        }
-
-        // Generate a "salt" value
-        var salt = bcrypt.genSaltSync(10);
-        // Hash the result
-        var hash = bcrypt.hashSync(userData.password, salt);
-
-        // Update the incoming data
-        userData.password = hash;
-
-        // Create a new user account document
-        let newUser = new UserAccounts(userData);
-
-        // Attempt to save
-        newUser.save(error => {
+        User.create(userData, (error, item) => {
           if (error) {
-            if (error.code == 11000) {
-              reject(
-                "User account creation - cannot create; user already exists"
-              );
-            } else {
-              reject(`User account creation - ${error.message}`);
-            }
-          } else {
-            resolve("User account was created");
+            // Cannot add item
+            return reject(error.message);
           }
-        }); //newUser.save
+          //Added object will be returned
+          return resolve(item);
+        });
       }); // return new Promise
     }, // useraccountsRegister
 
     userEdit: function(newUser) {
       return new Promise(function(resolve, reject) {
-        UserAccounts.findByIdAndUpdate(
-          newUser.user_userID,
+        User.findByIdAndUpdate(
+          newUser._id,
           newUser,
           { new: true },
           (error, item) => {
@@ -110,9 +85,9 @@ module.exports = function(mongoDBConnectionString) {
               return reject(error.message);
             }
             // Check for an user
-            if (user) {
+            if (item) {
               // Edited object will be returned
-              return resolve(user);
+              return resolve(item);
             } else {
               return reject("User not found");
             }
@@ -123,7 +98,7 @@ module.exports = function(mongoDBConnectionString) {
 
     userDelete: function(id) {
       return new Promise(function(resolve, reject) {
-        UserAccounts.findByIdAndRemove(id, error => {
+        User.findByIdAndRemove(id, error => {
           if (error) {
             // Cannot delete user
             return reject(error.message);
@@ -186,7 +161,7 @@ module.exports = function(mongoDBConnectionString) {
     eventsEdit: function(newItem) {
       return new Promise(function(resolve, reject) {
         Event.findByIdAndUpdate(
-          newItem.eventId,
+          newItem._id,
           newItem,
           { new: true },
           (error, item) => {
@@ -206,7 +181,7 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    eventDelete: function(eventId) {
+    eventsDelete: function(eventId) {
       return new Promise(function(resolve, reject) {
         Event.findByIdAndRemove(eventId, error => {
           if (error) {
@@ -223,8 +198,7 @@ module.exports = function(mongoDBConnectionString) {
     companyGetAll: function() {
       return new Promise(function(resolve, reject) {
         // Fetch all documents
-        Event.find()
-          .sort({ comp_id: "asc" })
+        Company.find()
           .exec((error, items) => {
             if (error) {
               // Query error
@@ -271,7 +245,7 @@ module.exports = function(mongoDBConnectionString) {
     companyEdit: function(newItem) {
       return new Promise(function(resolve, reject) {
         Company.findByIdAndUpdate(
-          newItem.comp_id,
+          newItem._id,
           newItem,
           { new: true },
           (error, item) => {
