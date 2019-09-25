@@ -13,7 +13,9 @@ const manager = require("./manager.js");
 
 // This one works for MongoDB Atlas...
 // Replace the database user name and password, and cluster name, with your own values
-const m = manager("mongodb+srv://btsUser:JulianVarshanNeil1@btsproject-3qsjm.mongodb.net/btsproject?retryWrites=true&w=majority");
+const m = manager(
+  "mongodb+srv://btsUser:JulianVarshanNeil1@btsproject-3qsjm.mongodb.net/btsproject?retryWrites=true&w=majority"
+);
 
 // Add support for incoming JSON entities
 app.use(bodyParser.json());
@@ -21,56 +23,9 @@ app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors());
 
-// Passport.js components
-var jwt = require('jsonwebtoken');
-var passport = require("passport");
-var passportJWT = require("passport-jwt");
-
-// JSON Web Token Setup
-var ExtractJwt = passportJWT.ExtractJwt;
-var JwtStrategy = passportJWT.Strategy;
-
-// Configure its options
-var jwtOptions = {};
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
-// IMPORTANT - this secret should be a long, unguessable string 
-// (ideally stored in a "protected storage" area on the 
-// web server, a topic that is beyond the scope of this course)
-// We suggest that you generate a random 64-character string
-// using the following online tool:
-// https://lastpass.com/generatepassword.php 
-jwtOptions.secretOrKey = 'big-long-string-from-lastpass.com/generatepassword.php';
-
-var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
-  console.log('payload received', jwt_payload);
-
-  if (jwt_payload) {
-    // The following will ensure that all routes using 
-    // passport.authenticate have a req.user._id value 
-    // that matches the request payload's _id
-    next(null, { _id: jwt_payload._id });
-  } else {
-    next(null, false);
-  }
-});
-
-// Activate the security system
-passport.use(strategy);
-app.use(passport.initialize());
-
 // Deliver the app's home page to browser clients
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/index.html"));
-});
-
-// Resource not found (this should be at the end)
-app.use((req, res) => {
-  res.status(404).send("Resource not found");
-});
-
-// Tell the app to start listening for requests
-app.listen(HTTP_PORT, () => {
-  console.log("Ready to handle requests on port " + HTTP_PORT);
 });
 
 /*******************************************************          EVENTS         *********************************************************************/
@@ -115,7 +70,7 @@ app.put("/api/events/:eventId", (req, res) => {
       res.json(data);
     })
     .catch(() => {
-      res.status(404).json({ message: "Resource not found" });
+      res.status(404).json({ message: "Event not found" });
     });
 });
 
@@ -133,58 +88,72 @@ app.delete("/api/events/:eventId", (req, res) => {
 /*********************************************************          USER         *********************************************************************/
 
 // Get all users
-app.get("/api/useraccounts", passport.authenticate('jwt', { session: false }), (req, res) => {
-    // Call the manager method
-    m.usersGetAll().then((data) => {
+app.get("/api/useraccounts", (req, res) => {
+  // Call the manager method
+  m.usersGetAll()
+    .then(data => {
       res.json(data);
     })
-      .catch((err) => {
-        res.status(500).json({ "message": err }).end();
-      })
+    .catch(err => {
+      res
+        .status(500)
+        .json({ message: err })
+        .end();
+    });
 });
 
 // Get one user
-app.get("/api/useraccounts/:userID", passport.authenticate('jwt', { session: false }), (req, res) => {
-    // Call the manager method
-    m.userGetById(req.params.userID).then((data) => {
+app.get("/api/useraccounts/:userID", (req, res) => {
+  // Call the manager method
+  m.userGetById(req.params.userID)
+    .then(data => {
       res.json(data);
     })
-      .catch((err) => {
-        res.status(404).json({ "message": "Resource not found" });
-      })
-  });
+    .catch(err => {
+      res.status(404).json({ message: "Resource not found" });
+    });
+});
 
 // User account create
 app.post("/api/useraccounts/create", (req, res) => {
   m.userRegister(req.body)
-    .then((data) => {
-      res.json({ "message": data });
-    }).catch((msg) => {
-      res.status(400).json({ "message": msg });
+    .then(data => {
+      res.json({ message: data });
+    })
+    .catch(msg => {
+      res.status(400).json({ message: msg });
     });
 });
 
 // Edit existing user
 app.put("/api/useraccounts/:userID", (req, res) => {
   m.userEdit(req.body)
-  .then((data) => {
-    res.json({message: "update user with Id: " + req.params.userID + " to " + req.body.firstName + " " + req.body.lastName});
-  })
-  .catch((msg) => {
-    res.status(404).json({ "message": msg });
-  })
+    .then(data => {
+      res.json({
+        message:
+          "update user with Id: " +
+          req.params.userID +
+          " to " +
+          req.body.firstName +
+          " " +
+          req.body.lastName
+      });
+    })
+    .catch(msg => {
+      res.status(404).json({ message: msg });
+    });
 });
 
 // Delete user
 app.delete("/api/useraccounts/:userID", (req, res) => {
-    // Call the manager method
-    m.userDelete(req.params.userID)
-      .then(() => {
-        res.status(204).end();
-      })
-      .catch(() => {
-        res.status(404).json({ "message": "Resource not found" });
-      })
+  // Call the manager method
+  m.userDelete(req.params.userID)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Resource not found" });
+    });
 });
 
 /*******************************************************          COMPANY         *********************************************************************/
@@ -202,7 +171,7 @@ app.get("/api/company", (req, res) => {
 
 // Get one
 app.get("/api/company/:companyID", (req, res) => {
-  m.eventsGetById(req.params.companyID)
+  m.companyGetById(req.params.companyID)
     .then(data => {
       res.json(data);
     })
@@ -245,3 +214,16 @@ app.delete("/api/company/:companyID", (req, res) => {
 });
 
 /*****************************************************************************************************************************************************/
+
+
+// Resource not found (this should be at the end)
+app.use((req, res) => {
+  res.status(404).send("Resource not found");
+});
+
+m.connect().then(() => {
+  app.listen(HTTP_PORT, () => { console.log("Ready to handle requests on port " + HTTP_PORT) });
+}).catch((err) => {
+  console.log("Unable to start the server:\n" + err);
+  process.exit();
+});
