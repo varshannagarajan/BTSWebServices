@@ -4,9 +4,9 @@ mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);
 
 // Load the schemas
-const eventSchema = require("schemas/sch-event.js");
-const userSchema = require("schemas/sch-user.js");
-const companySchema = require("schemas/sch-company.js");
+const eventSchema = require("./schemas/sch-event.js");
+const userSchema = require("./schemas/sch-user.js");
+const companySchema = require("./schemas/sch-company.js");
 
 module.exports = function(mongoDBConnectionString) {
   let Event; // defined on connection to the new db instance
