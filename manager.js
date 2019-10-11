@@ -1,5 +1,6 @@
 // Setup
 const mongoose = require("mongoose");
+const bcrypt = require('bcryptjs');
 mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);
 
@@ -30,6 +31,111 @@ module.exports = function(mongoDBConnectionString) {
         });
       });
     },
+
+    userActivate: function (userData) {
+      return new Promise(function (resolve, reject) {
+    
+        // Incoming data package has user name (email address),
+        // two identical passwords, and a role (string)
+        // { userName: xxx, password: yyy, passwordConfirm: yyy, role: zzz }
+    
+        if (userData.user_password != userData.user_passwordConfirm) {
+          return reject("Passwords do not match");
+        }
+    
+        // Generate a "salt" value
+        var salt = bcrypt.genSaltSync(10);
+        // Hash the result
+        var hash = bcrypt.hashSync(userData.user_password, salt);
+    
+        // Attempt to update the user account
+        User.findOneAndUpdate(
+          { user_email: userData.user_email },
+          { user_password: hash, user_statusActivated: true},
+          { new: true }, (error, item) => {
+            if (error) {
+              // Cannot edit item
+              return reject(`User account activation - ${error.message}`);
+            }
+            // Check for an item
+            if (item) {
+              // Edited object will be returned
+              //return resolve(item);
+              // Alternatively...
+              return resolve('User account was activated');
+            } else {
+              return reject('User account activation - not found');
+            }
+    
+          }); // UserAccounts.findOneAndUpdate
+      }); // return new Promise
+    }, // useraccountsActivate
+    
+    userRegister: function (userData) {
+      return new Promise(function (resolve, reject) {
+    
+        // Incoming data package has user name (email address), full name, 
+        // two identical passwords, and a role (string)
+        // { userName: xxx, fullName: aaa, password: yyy, passwordConfirm: yyy, role: zzz }
+    
+        if (userData.user_password != userData.user_passwordConfirm) {
+          return reject("Passwords do not match");
+        }
+    
+        // Generate a "salt" value
+        var salt = bcrypt.genSaltSync(10);
+        // Hash the result
+        var hash = bcrypt.hashSync(userData.user_password, salt);
+    
+        // Update the incoming data
+        userData.user_password = hash;
+    
+        // Create a new user account document
+        let newUser = new User(userData);
+    
+        // Attempt to save
+        newUser.save((error) => {
+          if (error) {
+            if (error.code == 11000) {
+              reject("User account creation - cannot create; user already exists");
+            } else {
+              reject(`User account creation - ${error.message}`);
+            }
+          } else {
+            resolve("User account was created");
+          }
+        }); //newUser.save
+      }); // return new Promise
+    }, // useraccountsRegister
+    
+    userLogin: function (userData) {
+      return new Promise(function (resolve, reject) {
+    
+        // Incoming data package has user name (email address) and password
+        // { userName: xxx, password: yyy }
+    
+        User.findOne(
+          { user_email: userData.user_email }, (error, item) => {
+            if (error) {
+              // Query error
+              return reject(`Login - ${error.message}`);
+            }
+            // Check for an item
+            if (item) {
+              let isPasswordMatch = bcrypt.compareSync(userData.user_password, item.user_password);
+              if (isPasswordMatch) {
+                return resolve(item);
+              }
+              else {
+                return reject('Login was not successful');
+              }
+            } else {
+              return reject('Login - not found');
+            }
+    
+          }); // UserAccounts.findOneAndUpdate
+      }); // return new Promise
+    }, // useraccountsLogin
 
     usersGetAll: function() {
       return new Promise(function(resolve, reject) {
