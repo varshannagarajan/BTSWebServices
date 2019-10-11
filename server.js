@@ -23,6 +23,43 @@ app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors());
 
+// Passport.js components
+var jwt = require('jsonwebtoken');
+var passport = require("passport");
+var passportJWT = require("passport-jwt");
+
+// JSON Web Token Setup
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
+
+// Configure its options
+var jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
+// IMPORTANT - this secret should be a long, unguessable string 
+// (ideally stored in a "protected storage" area on the 
+// web server, a topic that is beyond the scope of this course)
+// We suggest that you generate a random 64-character string
+// using the following online tool:
+// https://lastpass.com/generatepassword.php 
+jwtOptions.secretOrKey = 'big-long-string-from-lastpass.com/generatepassword.php';
+
+var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
+  console.log('payload received', jwt_payload);
+
+  if (jwt_payload) {
+    // The following will ensure that all routes using 
+    // passport.authenticate have a req.user._id value 
+    // that matches the request payload's _id
+    next(null, { _id: jwt_payload._id });
+  } else {
+    next(null, false);
+  }
+});
+
+// Activate the security system
+passport.use(strategy);
+app.use(passport.initialize());
+
 // Deliver the app's home page to browser clients
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/index.html"));

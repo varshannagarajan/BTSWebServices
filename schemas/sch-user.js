@@ -11,6 +11,7 @@ const eventSchema = require("./sch-event");
 // Schema 
 
 var userSchema = new Schema({
+    user_email: {type: String, unique: true},
     user_password: String,
     user_contactInfo: contactSchema,
     user_firstName: String,
@@ -20,7 +21,8 @@ var userSchema = new Schema({
     user_contacts: [String],
     user_favourites: [String],
     user_eventsList:[String],
-    user_bio: String
+    user_bio: String,
+    user_statusActivated: Boolean
 })
 
 // Make schema public to the application 
