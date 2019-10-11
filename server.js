@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
 /*******************************************************          EVENTS         *********************************************************************/
 
 // Get all
-app.get("/api/events", (req, res) => {
+app.get("/api/events", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.eventsGetAll()
     .then(data => {
       res.json(data);
@@ -79,7 +79,7 @@ app.get("/api/events", (req, res) => {
 });
 
 // Get one
-app.get("/api/events/:eventId", (req, res) => {
+app.get("/api/events/:eventId", passport.authenticate('jwt', { session: false }), (req, res) =>  {
   m.eventsGetById(req.params.eventId)
     .then(data => {
       res.json(data);
@@ -123,9 +123,40 @@ app.delete("/api/events/:eventId", (req, res) => {
 });
 
 /*********************************************************          USER         *********************************************************************/
+// ############################################################
+// This code handles requests for activate, create, and login
+
+// User account activate
+app.post("/api/users/activate", (req, res) => {
+  m.userActivate(req.body)
+    .then((data) => {
+      res.json({ "message": data });
+    }).catch((msg) => {
+      res.status(400).json({ "message": msg });
+    });
+});
+
+// User account login
+app.post("/api/users/login", (req, res) => {
+  m.userLogin(req.body)
+    .then((data) => {
+
+      // Configure the payload with data and claims
+      var payload = {
+        _id: data._id,
+        email: data.user_email,
+      };
+      var token = jwt.sign(payload, jwtOptions.secretOrKey);
+      // Return the result
+      res.json({ "message": "Login was successful", token: token });
+
+    }).catch((msg) => {
+      res.status(400).json({ "message": msg });
+    });
+});
 
 // Get all users
-app.get("/api/users", (req, res) => {
+app.get("/api/users", passport.authenticate('jwt', { session: false }), (req, res) =>  {
   // Call the manager method
   m.usersGetAll()
     .then(data => {
@@ -140,7 +171,7 @@ app.get("/api/users", (req, res) => {
 });
 
 // Get one user
-app.get("/api/users/:userID", (req, res) => {
+app.get("/api/users/:userID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
   // Call the manager method
   m.userGetById(req.params.userID)
     .then(data => {
@@ -196,7 +227,7 @@ app.delete("/api/users/:userID", (req, res) => {
 /*******************************************************          COMPANY         *********************************************************************/
 
 // Get all
-app.get("/api/company", (req, res) => {
+app.get("/api/company", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.companyGetAll()
     .then(data => {
       res.json(data);
@@ -207,7 +238,7 @@ app.get("/api/company", (req, res) => {
 });
 
 // Get one
-app.get("/api/company/:companyID", (req, res) => {
+app.get("/api/company/:companyID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
   m.companyGetById(req.params.companyID)
     .then(data => {
       res.json(data);

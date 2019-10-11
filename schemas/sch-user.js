@@ -4,9 +4,6 @@ var Schema = mongoose.Schema;
 
 const contactSchema = require("./sch-contact");
 const employmentInfoSchema = require("./sch-employmentinfo");
-const eventSchema = require("./sch-event");
-
-
 
 // Schema 
 

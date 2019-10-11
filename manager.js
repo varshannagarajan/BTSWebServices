@@ -39,19 +39,19 @@ module.exports = function(mongoDBConnectionString) {
         // two identical passwords, and a role (string)
         // { userName: xxx, password: yyy, passwordConfirm: yyy, role: zzz }
     
-        if (userData.password != userData.passwordConfirm) {
+        if (userData.user_password != userData.user_passwordConfirm) {
           return reject("Passwords do not match");
         }
     
         // Generate a "salt" value
         var salt = bcrypt.genSaltSync(10);
         // Hash the result
-        var hash = bcrypt.hashSync(userData.password, salt);
+        var hash = bcrypt.hashSync(userData.user_password, salt);
     
         // Attempt to update the user account
         User.findOneAndUpdate(
-          { user_email: userData.email },
-          { user_password: hash, statusActivated: true},
+          { user_email: userData.user_email },
+          { user_password: hash, user_statusActivated: true},
           { new: true }, (error, item) => {
             if (error) {
               // Cannot edit item
@@ -78,17 +78,17 @@ module.exports = function(mongoDBConnectionString) {
         // two identical passwords, and a role (string)
         // { userName: xxx, fullName: aaa, password: yyy, passwordConfirm: yyy, role: zzz }
     
-        if (userData.password != userData.passwordConfirm) {
+        if (userData.user_password != userData.user_passwordConfirm) {
           return reject("Passwords do not match");
         }
     
         // Generate a "salt" value
         var salt = bcrypt.genSaltSync(10);
         // Hash the result
-        var hash = bcrypt.hashSync(userData.password, salt);
+        var hash = bcrypt.hashSync(userData.user_password, salt);
     
         // Update the incoming data
-        userData.password = hash;
+        userData.user_password = hash;
     
         // Create a new user account document
         let newUser = new User(userData);
@@ -115,15 +115,14 @@ module.exports = function(mongoDBConnectionString) {
         // { userName: xxx, password: yyy }
     
         User.findOne(
-          { user_email: userData.email }, (error, item) => {
+          { user_email: userData.user_email }, (error, item) => {
             if (error) {
               // Query error
               return reject(`Login - ${error.message}`);
             }
             // Check for an item
             if (item) {
-              // Compare password with stored value
-              let isPasswordMatch = bcrypt.compareSync(userData.password, item.password);
+              let isPasswordMatch = bcrypt.compareSync(userData.user_password, item.user_password);
               if (isPasswordMatch) {
                 return resolve(item);
               }
