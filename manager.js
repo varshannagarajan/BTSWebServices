@@ -1,6 +1,6 @@
 // Setup
 const mongoose = require("mongoose");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);
 
@@ -8,6 +8,8 @@ mongoose.set("useFindAndModify", false);
 const eventSchema = require("./schemas/sch-event.js");
 const userSchema = require("./schemas/sch-user.js");
 const companySchema = require("./schemas/sch-company.js");
+
+const attendeeSchema = require("./schemas/sch-attendees.js");
 
 module.exports = function(mongoDBConnectionString) {
   let Event; // defined on connection to the new db instance
@@ -32,27 +34,27 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    userActivate: function (userData) {
-      return new Promise(function (resolve, reject) {
-    
+    userActivate: function(userData) {
+      return new Promise(function(resolve, reject) {
         // Incoming data package has user name (email address),
         // two identical passwords, and a role (string)
         // { userName: xxx, password: yyy, passwordConfirm: yyy, role: zzz }
-    
+
         if (userData.user_password != userData.user_passwordConfirm) {
           return reject("Passwords do not match");
         }
-    
+
         // Generate a "salt" value
         var salt = bcrypt.genSaltSync(10);
         // Hash the result
         var hash = bcrypt.hashSync(userData.user_password, salt);
-    
+
         // Attempt to update the user account
         User.findOneAndUpdate(
           { user_email: userData.user_email },
-          { user_password: hash, user_statusActivated: true},
-          { new: true }, (error, item) => {
+          { user_password: hash, user_statusActivated: true },
+          { new: true },
+          (error, item) => {
             if (error) {
               // Cannot edit item
               return reject(`User account activation - ${error.message}`);
@@ -62,42 +64,43 @@ module.exports = function(mongoDBConnectionString) {
               // Edited object will be returned
               //return resolve(item);
               // Alternatively...
-              return resolve('User account was activated');
+              return resolve("User account was activated");
             } else {
-              return reject('User account activation - not found');
+              return reject("User account activation - not found");
             }
-    
-          }); // UserAccounts.findOneAndUpdate
+          }
+        ); // UserAccounts.findOneAndUpdate
       }); // return new Promise
     }, // useraccountsActivate
-    
-    userRegister: function (userData) {
-      return new Promise(function (resolve, reject) {
-    
-        // Incoming data package has user name (email address), full name, 
+
+    userRegister: function(userData) {
+      return new Promise(function(resolve, reject) {
+        // Incoming data package has user name (email address), full name,
         // two identical passwords, and a role (string)
         // { userName: xxx, fullName: aaa, password: yyy, passwordConfirm: yyy, role: zzz }
-    
+
         if (userData.user_password != userData.user_passwordConfirm) {
           return reject("Passwords do not match");
         }
-    
+
         // Generate a "salt" value
         var salt = bcrypt.genSaltSync(10);
         // Hash the result
         var hash = bcrypt.hashSync(userData.user_password, salt);
-    
+
         // Update the incoming data
         userData.user_password = hash;
-    
+
         // Create a new user account document
         let newUser = new User(userData);
-    
+
         // Attempt to save
-        newUser.save((error) => {
+        newUser.save(error => {
           if (error) {
             if (error.code == 11000) {
-              reject("User account creation - cannot create; user already exists");
+              reject(
+                "User account creation - cannot create; user already exists"
+              );
             } else {
               reject(`User account creation - ${error.message}`);
             }
@@ -107,33 +110,32 @@ module.exports = function(mongoDBConnectionString) {
         }); //newUser.save
       }); // return new Promise
     }, // useraccountsRegister
-    
-    userLogin: function (userData) {
-      return new Promise(function (resolve, reject) {
-    
+
+    userLogin: function(userData) {
+      return new Promise(function(resolve, reject) {
         // Incoming data package has user name (email address) and password
         // { userName: xxx, password: yyy }
-    
-        User.findOne(
-          { user_email: userData.user_email }, (error, item) => {
-            if (error) {
-              // Query error
-              return reject(`Login - ${error.message}`);
-            }
-            // Check for an item
-            if (item) {
-              let isPasswordMatch = bcrypt.compareSync(userData.user_password, item.user_password);
-              if (isPasswordMatch) {
-                return resolve(item);
-              }
-              else {
-                return reject('Login was not successful');
-              }
+
+        User.findOne({ user_email: userData.user_email }, (error, item) => {
+          if (error) {
+            // Query error
+            return reject(`Login - ${error.message}`);
+          }
+          // Check for an item
+          if (item) {
+            let isPasswordMatch = bcrypt.compareSync(
+              userData.user_password,
+              item.user_password
+            );
+            if (isPasswordMatch) {
+              return resolve(item);
             } else {
-              return reject('Login - not found');
+              return reject("Login was not successful");
             }
-    
-          }); // UserAccounts.findOneAndUpdate
+          } else {
+            return reject("Login - not found");
+          }
+        }); // UserAccounts.findOneAndUpdate
       }); // return new Promise
     }, // useraccountsLogin
 
@@ -251,6 +253,37 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
+    eventsGetByCode: function(eventCode) {
+      return new Promise(function(resolve, reject) {
+        Event.findOne({ ev_code: eventCode })
+          .exec()
+          .then(event => {
+            // Found, one object will be returned
+            resolve(event);
+          })
+          .catch(err => {
+            // Find/match is not found
+            reject(err);
+          });
+      });
+    },
+
+    eventsAddAttendee: function(eventCode, attendee) {
+      return new Promise(function(resolve, reject) {
+        Event.findOneAndUpdate(
+          { ev_code: eventCode },
+          { $push: { ev_attendees: {user_email: attendee.user_email, attendee_id: attendee.attendee_id }} }
+          )
+          .exec()
+          .then(() => {
+            resolve("Attendee added");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
     eventsAdd: function(newItem) {
       return new Promise(function(resolve, reject) {
         Event.create(newItem, (error, item) => {
@@ -304,15 +337,14 @@ module.exports = function(mongoDBConnectionString) {
     companyGetAll: function() {
       return new Promise(function(resolve, reject) {
         // Fetch all documents
-        Company.find()
-          .exec((error, items) => {
-            if (error) {
-              // Query error
-              return reject(error.message);
-            }
-            // Found, a collection will be returned
-            return resolve(items);
-          });
+        Company.find().exec((error, items) => {
+          if (error) {
+            // Query error
+            return reject(error.message);
+          }
+          // Found, a collection will be returned
+          return resolve(items);
+        });
       });
     },
 
