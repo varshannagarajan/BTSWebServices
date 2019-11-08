@@ -4,8 +4,6 @@ var Schema = mongoose.Schema;
 
 const addressSchema = require("./sch-address");
 const contactSchema = require("./sch-contact");
-const userSchema = require("./sch-user");
-const eventSchema = require("./sch-event");
 
 // Schema 
 
