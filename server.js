@@ -204,6 +204,33 @@ app.get("/api/users/:userID", passport.authenticate('jwt', { session: false }), 
     });
 });
 
+// User adding another user to contact list through an attendee ID
+// takes a request body in the following form: {"eventCode": "42345678", "attendeeId": "1234", "adderUserEmail": "third@gmail.com"}
+// check's if event with event code given exists
+// if it does then it checks all the attendees in the event and sees if the attendee id given is in the event
+// if it is, then it adds the associated user to the adderUserEmail account
+app.put("/api/users/addContactWithAttendeeID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+  m.eventsGetByCode(req.body.eventCode)
+  .then(data => {
+    if(data.ev_attendees.some(attendee => {
+      if(attendee.attendee_id == req.body.attendeeId) {
+        m.userAddAttendee(req.body.adderUserEmail, attendee.user_email)
+        .then(newData => {
+          res.json({message: newData});
+        })
+        .catch(msg => {
+          res.status(400).json({message: msg});
+        })
+      } else {
+        res.status(400).json({message : "Attendee with given attendee id was not found in the event"});
+      }
+    }));
+  })
+  .catch(msg => {
+    res.status(400).json({ message: msg });
+  })
+});
+
 // User account create
 app.post("/api/users", (req, res) => {
   m.userRegister(req.body)
