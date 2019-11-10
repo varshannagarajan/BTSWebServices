@@ -182,6 +182,19 @@ app.get("/api/users/:userID", passport.authenticate('jwt', { session: false }), 
     });
 });
 
+// Get one user
+app.get("/api/users/username/:userName", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+  // Call the manager method
+  m.userGetByUsername(req.params.userName)
+    .then(data => {
+      console.log(data);
+      res.json(data);
+    })
+    .catch(err => {
+      res.status(404).json({ message: "Resource not found" });
+    });
+});
+
 // User account create
 app.post("/api/users", (req, res) => {
   m.userRegister(req.body)
