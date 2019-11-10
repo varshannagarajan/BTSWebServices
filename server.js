@@ -89,6 +89,17 @@ app.get("/api/events/:eventId", passport.authenticate('jwt', { session: false })
     });
 });
 
+// Get event by it's event code
+app.get("/api/events/eventCode/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
+  m.eventsGetByCode(req.params.eventCode)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(() => {
+      res.status(404).json({ message: "Event by event code not found" });
+    });
+});
+
 // Add new
 app.post("/api/events", (req, res) => {
   m.eventsAdd(req.body)
@@ -109,6 +120,17 @@ app.put("/api/events/:eventId", (req, res) => {
     .catch(() => {
       res.status(404).json({ message: "Event not found" });
     });
+});
+
+// Add an attendee to an event
+app.put("/api/events/attendees/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
+  m.eventsAddAttendee(req.params.eventCode, req.body)
+  .then(() => {
+    res.json("Attendees Saved");
+  })
+  .catch(() => {
+    res.status(404).json({ message: "Resource not found" });
+  });
 });
 
 // Delete item
