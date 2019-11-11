@@ -232,6 +232,23 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
+    userAddAttendee: function(adderUserEmail, addingUserEmail) {
+      // adderUserEmail is the user that is adding the other user
+      // addingUserEmail is the user being added
+      return new Promise(function(resolve, reject) {
+        User.findOneAndUpdate(
+          { user_email: adderUserEmail },
+          { $push: { user_contacts: addingUserEmail} })
+          .exec()
+          .then(() => {
+            resolve(addingUserEmail + " added to " + adderUserEmail + "'s contact list.");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
     /*******************************************************          EVENTS         *********************************************************************/
     eventsGetAll: function() {
       return new Promise(function(resolve, reject) {
