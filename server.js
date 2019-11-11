@@ -123,6 +123,8 @@ app.put("/api/events/:eventId", (req, res) => {
 });
 
 // Add an attendee to an event
+// takes a request body in the following form: {"user_email": "fifth@gmail.com", "attendee_id": 2234}
+// takes an event code in the params, i.e: /api/events/attendees/42345678   <--- those digits are an event code associated with an event
 app.put("/api/events/attendees/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.eventsAddAttendee(req.params.eventCode, req.body)
   .then(() => {
@@ -210,10 +212,12 @@ app.get("/api/users/:userID", passport.authenticate('jwt', { session: false }), 
 // if it does then it checks all the attendees in the event and sees if the attendee id given is in the event
 // if it is, then it adds the associated user to the adderUserEmail account
 app.put("/api/users/addContactWithAttendeeID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+  var foundUser = false;
   m.eventsGetByCode(req.body.eventCode)
   .then(data => {
     if(data.ev_attendees.some(attendee => {
       if(attendee.attendee_id == req.body.attendeeId) {
+        foundUser = true;
         m.userAddAttendee(req.body.adderUserEmail, attendee.user_email)
         .then(newData => {
           res.json({message: newData});
@@ -221,15 +225,16 @@ app.put("/api/users/addContactWithAttendeeID", passport.authenticate('jwt', { se
         .catch(msg => {
           res.status(400).json({message: msg});
         })
-      } else {
-        res.status(400).json({message : "Attendee with given attendee id was not found in the event"});
-      }
+      } 
     }));
+    if(!foundUser) {
+      res.status(400).json({message : "Attendee with given attendee id was not found in the event"});
+    }
   })
   .catch(msg => {
     res.status(400).json({ message: msg });
   })
-
+});
   
 // Get one user
 app.get("/api/users/username/:userName", passport.authenticate('jwt', { session: false }), (req, res) =>  {
