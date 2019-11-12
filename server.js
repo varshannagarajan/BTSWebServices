@@ -123,7 +123,7 @@ app.put("/api/events/:eventId", (req, res) => {
 });
 
 // Add an attendee to an event
-// takes a request body in the following form: {"user_email": "fifth@gmail.com", "attendee_id": 2234}
+// takes a request body in the following form: {"user_email": "fifth@gmail.com", user_firstName: "Julian", user_lastName: "Boyko", "attendee_id": 2234}
 // takes an event code in the params, i.e: /api/events/attendees/42345678   <--- those digits are an event code associated with an event
 app.put("/api/events/attendees/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.eventsAddAttendee(req.params.eventCode, req.body)

@@ -304,7 +304,8 @@ module.exports = function(mongoDBConnectionString) {
       return new Promise(function(resolve, reject) {
         Event.findOneAndUpdate(
           { ev_code: eventCode },
-          { $push: { ev_attendees: {user_email: attendee.user_email, attendee_id: attendee.attendee_id }} }
+          { $push: { ev_attendees: {user_email: attendee.user_email, user_firstName: attendee.user_firstName,
+             user_lastName: attendee.user_lastName, attendee_id: attendee.attendee_id }} }
           )
           .exec()
           .then(() => {
