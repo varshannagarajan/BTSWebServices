@@ -169,6 +169,7 @@ module.exports = function(mongoDBConnectionString) {
     },
 
     userGetByUsername: function(username) {
+      
       return new Promise(function(resolve, reject) {
         User.find({"user_email": username})
           .exec()
