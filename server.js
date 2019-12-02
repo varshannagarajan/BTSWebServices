@@ -93,10 +93,29 @@ app.get("/api/events/:eventId", passport.authenticate('jwt', { session: false })
 app.get("/api/events/eventCode/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.eventsGetByCode(req.params.eventCode)
     .then(data => {
+      console.log(data);
       res.json(data);
     })
     .catch(() => {
       res.status(404).json({ message: "Event by event code not found" });
+    });
+});
+
+
+// Get all user's events
+app.get("/api/events/userEvents/:username", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+  // Call the manager method
+  m.findUsersEvents(req.params.username)
+    .then(data => {
+      console.log("LMAOOOOOO");
+      console.log(data);
+      res.json(data);
+    })
+    .catch(err => {
+      res
+        .status(420)
+        .json({ message: err })
+        .end();
     });
 });
 
@@ -242,7 +261,6 @@ app.get("/api/users/username/:userName", passport.authenticate('jwt', { session:
   // Call the manager method
   m.userGetByUsername(req.params.userName)
     .then(data => {
-      console.log(data);
       res.json(data);
     })
     .catch(err => {
@@ -278,6 +296,16 @@ app.put("/api/users/:userID", (req, res) => {
     .catch(msg => {
       res.status(404).json({ message: msg });
     });
+});
+
+app.put("/api/users/addEvent/:eventCode", (req, res) => {
+  m.eventAddedToUser(req.params.eventCode, req.body)
+  .then(() => {
+    res.json("Attendees Saved");
+  })
+  .catch(() => {
+    res.status(404).json({ message: "Resource not found" });
+  });
 });
 
 // Delete user
