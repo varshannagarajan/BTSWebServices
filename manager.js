@@ -250,6 +250,89 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
+    eventAddedToUser: function(eventCode, adderUser) {
+      return new Promise(function(resolve, reject) {
+        User.findOneAndUpdate(
+          { user_email: adderUser.user_email },
+          { $push: { user_eventsList: eventCode} })
+          .exec()
+          .then(() => {
+            resolve("Event added");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
+    findUsersEvents: function(username) {
+      return new Promise(function(resolve, reject) {
+        User.findOne({"user_email": username})
+          .exec()
+          .then(user => {
+            var userEvents = [];
+
+            
+            user.user_eventsList.forEach(element => {
+              console.log(element);
+              Event.findOne({ ev_code: element })
+              .exec()
+              .then(event => {
+                // Found, one object will be returned
+                userEvents.push(event);
+                console.log(event);
+                
+              })
+              .catch(err => {
+                // Find/match is not found
+                reject(err);
+              });
+            });
+            //console.log(userEvents);
+            // Found, one object will be returned
+            resolve(userEvents);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
+    /*
+    findUsersEvents: function(username) {
+      return new Promise(function(resolve, reject) {
+        User.findOne({"user_email": username})
+          .exec()
+          .then(user => {
+            var userEvents = [];
+
+            
+            user.user_eventsList.forEach(element => {
+              console.log(element);
+              Event.findOne({ ev_code: element })
+              .exec()
+              .then(event => {
+                // Found, one object will be returned
+                userEvents.push(event);
+                console.log(event);
+                
+              })
+              .catch(err => {
+                // Find/match is not found
+                reject(err);
+              });
+            });
+            //console.log(userEvents);
+            // Found, one object will be returned
+            resolve(userEvents);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+    */
+
     /*******************************************************          EVENTS         *********************************************************************/
     eventsGetAll: function() {
       return new Promise(function(resolve, reject) {
