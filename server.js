@@ -279,6 +279,20 @@ app.post("/api/users", (req, res) => {
     });
 });
 
+// Remove Contact from User
+app.put("/usersdeleteContact", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+  console.log("yhid");
+  console.log(req.body.emailToDelete);
+  console.log(req.body.usersEmail);
+  m.userRemoveContact(req.body.emailToDelete, req.body.usersEmail)
+  .then(() => {
+    res.json("Attendees Saved");
+  })
+  .catch(() => {
+    res.status(404).json({ message: "Fuck me in the arse" });
+  });
+});
+
 // Edit existing user
 app.put("/api/users/:userID", (req, res) => {
   m.userEdit(req.body)
