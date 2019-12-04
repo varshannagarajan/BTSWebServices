@@ -280,7 +280,7 @@ app.post("/api/users", (req, res) => {
 });
 
 // Remove Contact from User
-app.put("/usersdeleteContact", (req, res) =>  {
+app.put("/api/usersdeleteContact", (req, res) =>  {
   m.userRemoveContact(req.body.emailToDelete, req.body.usersEmail)
   .then(() => {
     console.log("Contact Removed");
