@@ -280,16 +280,14 @@ app.post("/api/users", (req, res) => {
 });
 
 // Remove Contact from User
-app.put("/usersdeleteContact", passport.authenticate('jwt', { session: false }), (req, res) =>  {
-  console.log("yhid");
-  console.log(req.body.emailToDelete);
-  console.log(req.body.usersEmail);
+app.put("/usersdeleteContact", (req, res) =>  {
   m.userRemoveContact(req.body.emailToDelete, req.body.usersEmail)
   .then(() => {
-    res.json("Attendees Saved");
+    console.log("Contact Removed");
+    res.json("Contact Removed");
   })
   .catch(() => {
-    res.status(404).json({ message: "Fuck me in the arse" });
+    res.status(404).json({ message: "Delete Contact Not Working" });
   });
 });
 
