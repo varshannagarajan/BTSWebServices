@@ -250,6 +250,23 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
+    userRemoveContact: function(emailToDelete, usersEmail) {
+      return new Promise(function(resolve, reject) {
+        console.log(emailToDelete);
+        console.log(usersEmail);
+        User.findOneAndUpdate(
+          { user_email: usersEmail },
+          { $pull: { user_contacts: emailToDelete} })
+          .exec()
+          .then(() => {
+            resolve(addingUserEmail + " remove from " + adderUserEmail + "'s contact list.");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
     eventAddedToUser: function(eventCode, adderUser) {
       return new Promise(function(resolve, reject) {
         User.findOneAndUpdate(

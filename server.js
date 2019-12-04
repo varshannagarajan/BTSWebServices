@@ -279,6 +279,18 @@ app.post("/api/users", (req, res) => {
     });
 });
 
+// Remove Contact from User
+app.put("/usersdeleteContact", (req, res) =>  {
+  m.userRemoveContact(req.body.emailToDelete, req.body.usersEmail)
+  .then(() => {
+    console.log("Contact Removed");
+    res.json("Contact Removed");
+  })
+  .catch(() => {
+    res.status(404).json({ message: "Delete Contact Not Working" });
+  });
+});
+
 // Edit existing user
 app.put("/api/users/:userID", (req, res) => {
   m.userEdit(req.body)
