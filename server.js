@@ -5,14 +5,12 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
+
+const company = require('./routes/company');
 // Or use some other port number that you like better
 
 // Data model and persistent store
 const manager = require("./manager.js");
-// This one works for localhost...
-
-// This one works for MongoDB Atlas...
-// Replace the database user name and password, and cluster name, with your own values
 const m = manager(
   "mongodb+srv://btsUser:JulianVarshanNeil1@btsproject-3qsjm.mongodb.net/btsproject?retryWrites=true&w=majority"
 );
@@ -35,12 +33,6 @@ var JwtStrategy = passportJWT.Strategy;
 // Configure its options
 var jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
-// IMPORTANT - this secret should be a long, unguessable string 
-// (ideally stored in a "protected storage" area on the 
-// web server, a topic that is beyond the scope of this course)
-// We suggest that you generate a random 64-character string
-// using the following online tool:
-// https://lastpass.com/generatepassword.php 
 jwtOptions.secretOrKey = 'big-long-string-from-lastpass.com/generatepassword.php';
 
 var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
@@ -332,62 +324,7 @@ app.delete("/api/users/:userID", (req, res) => {
     });
 });
 
-/*******************************************************          COMPANY         *********************************************************************/
-
-// Get all
-app.get("/api/company", passport.authenticate('jwt', { session: false }), (req, res) => {
-  m.companyGetAll()
-    .then(data => {
-      res.json(data);
-    })
-    .catch(error => {
-      res.status(500).json({ message: error });
-    });
-});
-
-// Get one
-app.get("/api/company/:companyID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
-  m.companyGetById(req.params.companyID)
-    .then(data => {
-      res.json(data);
-    })
-    .catch(() => {
-      res.status(404).json({ message: "Resource not found" });
-    });
-});
-
-// Add new
-app.post("/api/company", (req, res) => {
-  m.companyAdd(req.body)
-    .then(data => {
-      res.json(data);
-    })
-    .catch(error => {
-      res.status(500).json({ message: error });
-    });
-});
-
-// Edit existing
-app.put("/api/company/:companyID", (req, res) => {
-  m.companyEdit(req.body)
-    .then(data => {
-      res.json(data);
-    })
-    .catch(() => {
-      res.status(404).json({ message: "Resource not found" });
-    });
-});
-
-// Delete item
-app.delete("/api/company/:companyID", (req, res) => {
-  m.companyDelete(req.params.companyID)
-    .then(() => {
-      res.status(204).end();
-    })
-    .catch(() => {
-      res.status(404).json({ message: "Resource not found" });
-    });
-});
+app.use('/api/company', company);
 
 /*****************************************************************************************************************************************************/
 
