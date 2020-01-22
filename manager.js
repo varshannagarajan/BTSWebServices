@@ -169,9 +169,8 @@ module.exports = function(mongoDBConnectionString) {
     },
 
     userGetByUsername: function(username) {
-      
       return new Promise(function(resolve, reject) {
-        User.findOne({"user_email": username})
+        User.findOne({ user_email: username })
           .exec()
           .then(user => {
             // Found, one object will be returned
@@ -186,7 +185,6 @@ module.exports = function(mongoDBConnectionString) {
 
     userRegister: function(userData) {
       return new Promise(function(resolve, reject) {
-        console.log(userData);
         User.create(userData, (error, item) => {
           if (error) {
             // Cannot add item
@@ -201,23 +199,19 @@ module.exports = function(mongoDBConnectionString) {
     userEdit: function(newUser) {
       return new Promise(function(resolve, reject) {
         console.log(newUser);
-        User.findOneAndReplace(
-          {"_id" : newUser._id},
-          {newUser},
-          (error, item) => {
-            if (error) {
-              // Cannot edit user
-              return reject(error.message);
-            }
-            // Check for an user
-            if (item) {
-              // Edited object will be returned
-              return resolve(item);
-            } else {
-              return reject("User not found");
-            }
+        User.findByIdAndUpdate(newUser._id, newUser, (error, item) => {
+          if (error) {
+            // Cannot edit user
+            return reject(error.message);
           }
-        );
+          // Check for an user
+          if (item) {
+            // Edited object will be returned
+            return resolve(item);
+          } else {
+            return reject("User not found");
+          }
+        });
       });
     },
 
@@ -240,10 +234,16 @@ module.exports = function(mongoDBConnectionString) {
       return new Promise(function(resolve, reject) {
         User.findOneAndUpdate(
           { user_email: adderUserEmail },
-          { $push: { user_contacts: addingUserEmail} })
+          { $push: { user_contacts: addingUserEmail } }
+        )
           .exec()
           .then(() => {
-            resolve(addingUserEmail + " added to " + adderUserEmail + "'s contact list.");
+            resolve(
+              addingUserEmail +
+                " added to " +
+                adderUserEmail +
+                "'s contact list."
+            );
           })
           .catch(err => {
             reject(err);
@@ -253,14 +253,18 @@ module.exports = function(mongoDBConnectionString) {
 
     userRemoveContact: function(emailToDelete, usersEmail) {
       return new Promise(function(resolve, reject) {
-        console.log(emailToDelete);
-        console.log(usersEmail);
         User.findOneAndUpdate(
           { user_email: usersEmail },
-          { $pull: { user_contacts: emailToDelete} })
+          { $pull: { user_contacts: emailToDelete } }
+        )
           .exec()
           .then(() => {
-            resolve(addingUserEmail + " remove from " + adderUserEmail + "'s contact list.");
+            resolve(
+              addingUserEmail +
+                " remove from " +
+                adderUserEmail +
+                "'s contact list."
+            );
           })
           .catch(err => {
             reject(err);
@@ -272,7 +276,8 @@ module.exports = function(mongoDBConnectionString) {
       return new Promise(function(resolve, reject) {
         User.findOneAndUpdate(
           { user_email: userEmail },
-          { $set: { user_profilePicture: profilePictureURL }})
+          { $set: { user_profilePicture: profilePictureURL } }
+        )
           .exec()
           .then(() => {
             resolve("Profile Picture added.");
@@ -287,7 +292,8 @@ module.exports = function(mongoDBConnectionString) {
       return new Promise(function(resolve, reject) {
         User.findOneAndUpdate(
           { user_email: adderUser.user_email },
-          { $push: { user_eventsList: eventCode} })
+          { $push: { user_eventsList: eventCode } }
+        )
           .exec()
           .then(() => {
             resolve("Event added");
@@ -300,28 +306,23 @@ module.exports = function(mongoDBConnectionString) {
 
     findUsersEvents: function(username) {
       return new Promise(function(resolve, reject) {
-        User.findOne({"user_email": username})
+        User.findOne({ user_email: username })
           .exec()
           .then(user => {
             var userEvents = [];
 
-            
             user.user_eventsList.forEach(element => {
-              console.log(element);
               Event.findOne({ ev_code: element })
-              .exec()
-              .then(event => {
-                // Found, one object will be returned
-                userEvents.push(event);
-                console.log(event);
-                
-              })
-              .catch(err => {
-                // Find/match is not found
-                reject(err);
-              });
+                .exec()
+                .then(event => {
+                  // Found, one object will be returned
+                  userEvents.push(event);
+                })
+                .catch(err => {
+                  // Find/match is not found
+                  reject(err);
+                });
             });
-            //console.log(userEvents);
             // Found, one object will be returned
             resolve(userEvents);
           })
@@ -421,9 +422,17 @@ module.exports = function(mongoDBConnectionString) {
       return new Promise(function(resolve, reject) {
         Event.findOneAndUpdate(
           { ev_code: eventCode },
-          { $push: { ev_attendees: {user_email: attendee.user_email, user_firstName: attendee.user_firstName,
-             user_lastName: attendee.user_lastName, attendee_id: attendee.attendee_id }} }
-          )
+          {
+            $push: {
+              ev_attendees: {
+                user_email: attendee.user_email,
+                user_firstName: attendee.user_firstName,
+                user_lastName: attendee.user_lastName,
+                attendee_id: attendee.attendee_id
+              }
+            }
+          }
+        )
           .exec()
           .then(() => {
             resolve("Attendee added");
