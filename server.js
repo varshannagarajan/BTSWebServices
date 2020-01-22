@@ -93,7 +93,6 @@ app.get("/api/events/:eventId", passport.authenticate('jwt', { session: false })
 app.get("/api/events/eventCode/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.eventsGetByCode(req.params.eventCode)
     .then(data => {
-      console.log(data);
       res.json(data);
     })
     .catch(() => {
@@ -107,8 +106,6 @@ app.get("/api/events/userEvents/:username", passport.authenticate('jwt', { sessi
   // Call the manager method
   m.findUsersEvents(req.params.username)
     .then(data => {
-      console.log("LMAOOOOOO");
-      console.log(data);
       res.json(data);
     })
     .catch(err => {
@@ -270,6 +267,7 @@ app.get("/api/users/username/:userName", passport.authenticate('jwt', { session:
 
 // User account create
 app.post("/api/users", (req, res) => {
+  console.log(req.body);
   m.userRegister(req.body)
     .then(data => {
       res.json({ message: data });
@@ -283,7 +281,6 @@ app.post("/api/users", (req, res) => {
 app.put("/api/usersdeleteContact", (req, res) =>  {
   m.userRemoveContact(req.body.emailToDelete, req.body.usersEmail)
   .then(() => {
-    console.log("Contact Removed");
     res.json("Contact Removed");
   })
   .catch(() => {

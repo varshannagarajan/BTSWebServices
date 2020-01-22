@@ -186,6 +186,7 @@ module.exports = function(mongoDBConnectionString) {
 
     userRegister: function(userData) {
       return new Promise(function(resolve, reject) {
+        console.log(userData);
         User.create(userData, (error, item) => {
           if (error) {
             // Cannot add item
@@ -199,10 +200,10 @@ module.exports = function(mongoDBConnectionString) {
 
     userEdit: function(newUser) {
       return new Promise(function(resolve, reject) {
-        User.findByIdAndUpdate(
-          newUser._id,
-          newUser,
-          { new: true },
+        console.log(newUser);
+        User.findOneAndReplace(
+          {"_id" : newUser._id},
+          {newUser},
           (error, item) => {
             if (error) {
               // Cannot edit user
