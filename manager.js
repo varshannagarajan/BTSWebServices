@@ -268,6 +268,21 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
+    userAddPicture: function(userEmail, profilePictureURL) {
+      return new Promise(function(resolve, reject) {
+        User.findOneAndUpdate(
+          { user_email: userEmail },
+          { $set: { user_profilePicture: profilePictureURL }})
+          .exec()
+          .then(() => {
+            resolve("Profile Picture added.");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
     eventAddedToUser: function(eventCode, adderUser) {
       return new Promise(function(resolve, reject) {
         User.findOneAndUpdate(
