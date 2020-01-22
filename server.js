@@ -1,4 +1,5 @@
 // Setup
+const upload = require('./middleware/file-upload');
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -199,6 +200,12 @@ app.delete("/api/events/:eventId", (req, res) => {
 // ############################################################
 // This code handles requests for activate, create, and login
 
+/* Where image is the name of the property sent from angular via the Form Data and the 1 is the max number of files to upload*/
+app.post('/api/users/upload-picture', upload.array('image', 1), (req, res) => {
+  /* This will be the response sent from the backend to the frontend */
+  res.send({ image: req.file });
+ });
+
 // User account activate
 app.post("/api/users/activate", (req, res) => {
   m.userActivate(req.body)
@@ -289,6 +296,18 @@ app.put("/api/usersdeleteContact", (req, res) =>  {
   .catch(() => {
     res.status(404).json({ message: "Delete Contact Not Working" });
   });
+});
+
+// Add profile picture url to User
+app.put("/api/users/add-picture", (req, res) => {
+  m.userAddPicture(req.body.userEmail, req.body.profilePictureURL)
+  .then(() => {
+    console.log("Profile Picture added.");
+    res.json("Profile Picture added.");
+  })
+  .catch(() => {
+    res.status(403).json({ message: "Profile Picture could not be added." });
+  })
 });
 
 // Edit existing user
