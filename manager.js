@@ -272,7 +272,7 @@ module.exports = function(mongoDBConnectionString) {
       });
     },
 
-    userAddPicture: function(userEmail, profilePictureURL) {
+    userAddProfilePicture: function(userEmail, profilePictureURL) {
       return new Promise(function(resolve, reject) {
         User.findOneAndUpdate(
           { user_email: userEmail },
@@ -281,6 +281,22 @@ module.exports = function(mongoDBConnectionString) {
           .exec()
           .then(() => {
             resolve("Profile Picture added.");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
+    userAddLogoPicture: function(userEmail, logoPictureURL) {
+      return new Promise(function(resolve, reject) {
+        User.findOneAndUpdate(
+          { user_email: userEmail },
+          { $set: { user_logoPicture: logoPictureURL } }
+        )
+          .exec()
+          .then(() => {
+            resolve("Logo Picture added.");
           })
           .catch(err => {
             reject(err);

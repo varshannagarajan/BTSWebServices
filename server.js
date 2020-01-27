@@ -296,14 +296,26 @@ app.put("/api/usersdeleteContact", (req, res) =>  {
 });
 
 // Add profile picture url to User
-app.put("/api/users/add-picture", (req, res) => {
-  m.userAddPicture(req.body.userEmail, req.body.profilePictureURL)
+app.put("/api/users/add-profile-picture", (req, res) => {
+  m.userAddProfilePicture(req.body.userEmail, req.body.pictureURL)
   .then(() => {
     console.log("Profile Picture added.");
     res.json("Profile Picture added.");
   })
   .catch(() => {
     res.status(403).json({ message: "Profile Picture could not be added." });
+  })
+});
+
+// Add logo picture url to User
+app.put("/api/users/add-logo-picture", (req, res) => {
+  m.userAddLogoPicture(req.body.userEmail, req.body.pictureURL)
+  .then(() => {
+    console.log("Logo Picture added.");
+    res.json("Logo Picture added.");
+  })
+  .catch(() => {
+    res.status(403).json({ message: "Logo Picture could not be added." });
   })
 });
 
