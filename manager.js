@@ -384,6 +384,19 @@ module.exports = function(mongoDBConnectionString) {
     */
 
     /*******************************************************          EVENTS         *********************************************************************/
+    eventsCreate: function(newEvent) {
+      return new Promise(function(resolve, reject) {
+        Event.create(newEvent, (error, item) => {
+          if (error) {
+            // Cannot add item
+            return reject(error.message);
+          }
+          //Added object will be returned
+          return resolve(item);
+        });
+      });
+    },
+
     eventsGetAll: function() {
       return new Promise(function(resolve, reject) {
         // Fetch all documents
