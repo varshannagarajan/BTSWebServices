@@ -5,6 +5,9 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const app = express();
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
+
 const HTTP_PORT = process.env.PORT || 8080;
 // Or use some other port number that you like better
 
@@ -24,42 +27,66 @@ app.use(bodyParser.json());
 // Add support for CORS
 app.use(cors());
 
-// Passport.js components
-var jwt = require('jsonwebtoken');
-var passport = require("passport");
-var passportJWT = require("passport-jwt");
+// Set up Auth0 configuration
+const authConfig = {
+  domain: "dev-m7n5ttvf.auth0.com",
+  audience: "https://mesh-group11.herokuapp.com/"
+};
 
-// JSON Web Token Setup
-var ExtractJwt = passportJWT.ExtractJwt;
-var JwtStrategy = passportJWT.Strategy;
-
-// Configure its options
-var jwtOptions = {};
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
-// IMPORTANT - this secret should be a long, unguessable string 
-// (ideally stored in a "protected storage" area on the 
-// web server, a topic that is beyond the scope of this course)
-// We suggest that you generate a random 64-character string
-// using the following online tool:
-// https://lastpass.com/generatepassword.php 
-jwtOptions.secretOrKey = 'big-long-string-from-lastpass.com/generatepassword.php';
-
-var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
-  console.log('payload received', jwt_payload);
-
-  if (jwt_payload) {
-    // The following will ensure that all routes using 
-    // passport.authenticate have a req.user._id value 
-    // that matches the request payload's _id
-    next(null, { _id: jwt_payload._id });
-  } else {
-    next(null, false);
-  }
+var jwtCheck = jwt({
+  secret: jwks.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: 'https://dev-m7n5ttvf.auth0.com/.well-known/jwks.json'
+}),
+audience: 'https://mesh-group11.herokuapp.com/',
+issuer: 'https://dev-m7n5ttvf.auth0.com/',
+algorithms: ['RS256']
 });
 
-// Activate the security system
-passport.use(strategy);
-app.use(passport.initialize());
+app.use(jwtCheck);
+
+app.get('/authorized', function (req, res) {
+  res.send('Secured Resource');
+});
+
+// // Passport.js components
+// var jwt = require('jsonwebtoken');
+// var passport = require("passport");
+// var passportJWT = require("passport-jwt");
+
+// // JSON Web Token Setup
+// var ExtractJwt = passportJWT.ExtractJwt;
+// var JwtStrategy = passportJWT.Strategy;
+
+// // Configure its options
+// var jwtOptions = {};
+// jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
+// // IMPORTANT - this secret should be a long, unguessable string 
+// // (ideally stored in a "protected storage" area on the 
+// // web server, a topic that is beyond the scope of this course)
+// // We suggest that you generate a random 64-character string
+// // using the following online tool:
+// // https://lastpass.com/generatepassword.php 
+// jwtOptions.secretOrKey = 'big-long-string-from-lastpass.com/generatepassword.php';
+
+// var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
+//   console.log('payload received', jwt_payload);
+
+//   if (jwt_payload) {
+//     // The following will ensure that all routes using 
+//     // passport.authenticate have a req.user._id value 
+//     // that matches the request payload's _id
+//     next(null, { _id: jwt_payload._id });
+//   } else {
+//     next(null, false);
+//   }
+// });
+
+// // Activate the security system
+// passport.use(strategy);
+// app.use(passport.initialize());
 
 // Deliver the app's home page to browser clients
 app.get("/", (req, res) => {
@@ -68,7 +95,7 @@ app.get("/", (req, res) => {
 
 /*******************************************************          EVENTS         *********************************************************************/
 // Get all
-app.get("/api/events", passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get("/api/events", function (req, res) {
   m.eventsGetAll()
     .then(data => {
       res.json(data);
@@ -79,7 +106,7 @@ app.get("/api/events", passport.authenticate('jwt', { session: false }), (req, r
 });
 
 // Get one
-app.get("/api/events/:eventId", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.get("/api/events/:eventId", function (req, res) {
   m.eventsGetById(req.params.eventId)
     .then(data => {
       res.json(data);
@@ -90,7 +117,7 @@ app.get("/api/events/:eventId", passport.authenticate('jwt', { session: false })
 });
 
 // Get event by it's event code
-app.get("/api/events/eventCode/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get("/api/events/eventCode/:eventCode", function (req, res) {
   m.eventsGetByCode(req.params.eventCode)
     .then(data => {
       res.json(data);
@@ -102,7 +129,7 @@ app.get("/api/events/eventCode/:eventCode", passport.authenticate('jwt', { sessi
 
 
 // Get all user's events
-app.get("/api/events/userEvents/:username", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.get("/api/events/userEvents/:username", function (req, res) {
   // Call the manager method
   m.findUsersEvents(req.params.username)
     .then(data => {
@@ -117,7 +144,7 @@ app.get("/api/events/userEvents/:username", passport.authenticate('jwt', { sessi
 });
 
 // Add new
-app.post("/api/events", (req, res) => {
+app.post("/api/events", function (req, res) {
   m.eventsAdd(req.body)
     .then(data => {
       res.json(data);
@@ -128,7 +155,7 @@ app.post("/api/events", (req, res) => {
 });
 
 // Edit existing
-app.put("/api/events/:eventId", (req, res) => {
+app.put("/api/events/:eventId", function (req, res) {
   m.eventsEdit(req.body)
     .then(data => {
       res.json(data);
@@ -143,7 +170,7 @@ app.put("/api/events/:eventId", (req, res) => {
 // check's if event with event code given exists
 // if it does then it checks all the attendees in the event and sees if the attendee id given is in the event
 // if it is, then it adds the associated user to the adderUserEmail account
-app.put("/api/eventsaddContactWithAttendeeID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.put("/api/eventsaddContactWithAttendeeID", function (req, res) {
   var foundUser = false;
   m.eventsGetByCode(req.body.eventCode)
   .then(data => {
@@ -171,7 +198,7 @@ app.put("/api/eventsaddContactWithAttendeeID", passport.authenticate('jwt', { se
 // Add an attendee to an event
 // takes a request body in the following form: {"user_email": "fifth@gmail.com", user_firstName: "Julian", user_lastName: "Boyko", "attendee_id": 2234}
 // takes an event code in the params, i.e: /api/events/attendees/42345678   <--- those digits are an event code associated with an event
-app.put("/api/events/attendees/:eventCode", passport.authenticate('jwt', { session: false }), (req, res) => {
+app.put("/api/events/attendees/:eventCode",checkJwt, (req, res) => {
   m.eventsAddAttendee(req.params.eventCode, req.body)
   .then(() => {
     res.json("Attendees Saved");
@@ -182,7 +209,7 @@ app.put("/api/events/attendees/:eventCode", passport.authenticate('jwt', { sessi
 });
 
 // Delete item
-app.delete("/api/events/:eventId", (req, res) => {
+app.delete("/api/events/:eventId", checkJwt, (req, res) => {
   m.eventsDelete(req.params.eventId)
     .then(() => {
       res.status(204).end();
@@ -212,27 +239,27 @@ app.post("/api/users/activate", (req, res) => {
     });
 });
 
-// User account login
-app.post("/api/users/login", (req, res) => {
-  m.userLogin(req.body)
-    .then((data) => {
+// // User account login
+// app.post("/api/users/login", (req, res) => {
+//   m.userLogin(req.body)
+//     .then((data) => {
 
-      // Configure the payload with data and claims
-      var payload = {
-        _id: data._id,
-        email: data.user_email,
-      };
-      var token = jwt.sign(payload, jwtOptions.secretOrKey);
-      // Return the result
-      res.json({ "message": "Login was successful", token: token });
+//       // Configure the payload with data and claims
+//       var payload = {
+//         _id: data._id,
+//         email: data.user_email,
+//       };
+//       var token = jwt.sign(payload, jwtOptions.secretOrKey);
+//       // Return the result
+//       res.json({ "message": "Login was successful", token: token });
 
-    }).catch((msg) => {
-      res.status(400).json({ "message": msg });
-    });
-});
+//     }).catch((msg) => {
+//       res.status(400).json({ "message": msg });
+//     });
+// });
 
 // Get all users
-app.get("/api/users", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.get("/api/users", checkJwt, (req, res) => {
   // Call the manager method
   m.usersGetAll()
     .then(data => {
@@ -247,7 +274,7 @@ app.get("/api/users", passport.authenticate('jwt', { session: false }), (req, re
 });
 
 // Get one user
-app.get("/api/users/:userID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.get("/api/users/:userID", function (req, res) {
   // Call the manager method
   m.userGetById(req.params.userID)
     .then(data => {
@@ -260,7 +287,7 @@ app.get("/api/users/:userID", passport.authenticate('jwt', { session: false }), 
 
   
 // Get one user
-app.get("/api/users/username/:userName", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.get("/api/users/username/:userName", function (req, res) {
   // Call the manager method
   m.userGetByUsername(req.params.userName)
     .then(data => {
@@ -362,7 +389,7 @@ app.delete("/api/users/:userID", (req, res) => {
 /*******************************************************          COMPANY         *********************************************************************/
 
 // Get all
-app.get("/api/company", passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get("/api/company", function (req, res) {
   m.companyGetAll()
     .then(data => {
       res.json(data);
@@ -373,7 +400,7 @@ app.get("/api/company", passport.authenticate('jwt', { session: false }), (req, 
 });
 
 // Get one
-app.get("/api/company/:companyID", passport.authenticate('jwt', { session: false }), (req, res) =>  {
+app.get("/api/company/:companyID", function (req, res) {
   m.companyGetById(req.params.companyID)
     .then(data => {
       res.json(data);
