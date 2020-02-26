@@ -30,7 +30,7 @@ app.use(cors());
 // Set up Auth0 configuration
 const authConfig = {
   domain: "dev-m7n5ttvf.auth0.com",
-  audience: "https://mesh-group11.herokuapp.com/"
+  audience: "https://btsgroup11webservices.herokuapp.com/api/"
 };
 
 var jwtCheck = jwt({
@@ -40,14 +40,14 @@ var jwtCheck = jwt({
       jwksRequestsPerMinute: 5,
       jwksUri: 'https://dev-m7n5ttvf.auth0.com/.well-known/jwks.json'
 }),
-audience: 'https://mesh-group11.herokuapp.com/',
-issuer: 'https://dev-m7n5ttvf.auth0.com/',
+audience: authConfig.audience,
+issuer: `https://${authConfig.domain}/`,
 algorithms: ['RS256']
 });
 
 app.use(jwtCheck);
 
-app.get('/authorized', function (req, res) {
+app.get('/authorized', jwtCheck, function (req, res) {
   res.send('Secured Resource');
 });
 
@@ -198,7 +198,7 @@ app.put("/api/eventsaddContactWithAttendeeID", function (req, res) {
 // Add an attendee to an event
 // takes a request body in the following form: {"user_email": "fifth@gmail.com", user_firstName: "Julian", user_lastName: "Boyko", "attendee_id": 2234}
 // takes an event code in the params, i.e: /api/events/attendees/42345678   <--- those digits are an event code associated with an event
-app.put("/api/events/attendees/:eventCode",checkJwt, (req, res) => {
+app.put("/api/events/attendees/:eventCode", (req, res) => {
   m.eventsAddAttendee(req.params.eventCode, req.body)
   .then(() => {
     res.json("Attendees Saved");
@@ -209,7 +209,7 @@ app.put("/api/events/attendees/:eventCode",checkJwt, (req, res) => {
 });
 
 // Delete item
-app.delete("/api/events/:eventId", checkJwt, (req, res) => {
+app.delete("/api/events/:eventId", (req, res) => {
   m.eventsDelete(req.params.eventId)
     .then(() => {
       res.status(204).end();
@@ -259,7 +259,7 @@ app.post("/api/users/activate", (req, res) => {
 // });
 
 // Get all users
-app.get("/api/users", checkJwt, (req, res) => {
+app.get("/api/users", (req, res) => {
   // Call the manager method
   m.usersGetAll()
     .then(data => {
