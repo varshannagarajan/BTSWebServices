@@ -67,18 +67,6 @@ app.get("/", (req, res) => {
 });
 
 /*******************************************************          EVENTS         *********************************************************************/
-
-// Add new event
-app.post("/api/create-event", (req, res) => {
-  m.eventsCreate(req.body)
-    .then(data => {
-      res.json(data);
-    })
-    .catch(error => {
-      res.status(500).json({ message: error });
-    });
-});
-
 // Get all
 app.get("/api/events", passport.authenticate('jwt', { session: false }), (req, res) => {
   m.eventsGetAll()
